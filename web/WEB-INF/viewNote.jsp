@@ -6,6 +6,16 @@
         <title>Hello World</title>
     </head>
     <body>
-        <h1>Hello World!</h1>
+        <h1>Simple Note Keeper</h1>
+        <h2>View Note</h2>
+        
+        <h3>Title: </h3>
+        <p>test</p>
+        
+        <h3>Contents: </h3>
+        <p>test</p>
+        
+        <a href="note?edit">Edit</a>
+
     </body>
 </html>
