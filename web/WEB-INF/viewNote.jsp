@@ -10,10 +10,10 @@
         <h2>View Note</h2>
         
         <h3>Title: </h3>
-        <p>test</p>
+        <p>${note.title}</p>
         
         <h3>Contents: </h3>
-        <p>test</p>
+        <p>${note.content}</p>
         
         <a href="note?edit">Edit</a>
 
