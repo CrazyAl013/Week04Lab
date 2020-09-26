@@ -1,50 +1,56 @@
 package servlets;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import models.Note;
-import static java.lang.System.out;
 
 /**
  *
  * @author cprg352
  */
 public class NoteServlet extends HttpServlet {
-
-    private Note note;
-
+    private String path;
+    
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        this.path = getServletContext().getRealPath("/WEB-INF/note.txt");
         //read from file
-        String path = getServletContext().getRealPath("/WEB-INF/note.txt");
+        Note note = readFile();
         
-        readFile(path);
-        
-        request.setAttribute("note", this.note);
+        request.setAttribute("note", note);
         
         if (request.getParameter("edit") != null) {
             getServletContext().getRequestDispatcher("/WEB-INF/editNote.jsp").forward(request, response);
+        } else {
+            getServletContext().getRequestDispatcher("/WEB-INF/viewNote.jsp").forward(request, response);
         }
-        getServletContext().getRequestDispatcher("/WEB-INF/viewNote.jsp").forward(request, response);
 
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        //getServletContext().getRequestDispatcher("/WEB-INF/sayHello.jsp").forward(request, response);
+        Note note = new Note(request.getParameter("title"), request.getParameter("content"));
+        writeFile(note);
+        
+        doGet(request, response);
     }
 
-    private void readFile(String path) {
-        this.note = new Note();
+    private Note readFile() {
+        Note note = new Note();
         
         try {
-            BufferedReader reader = new BufferedReader(new FileReader(new File(path)));
+            BufferedReader reader = new BufferedReader(new FileReader(new File(this.path)));
             
             note.setTitle(reader.readLine());
             note.setContent(reader.readLine());
@@ -52,6 +58,19 @@ public class NoteServlet extends HttpServlet {
             reader.close();
         } catch(Exception e) {
             
+        }
+        return note;
+    }
+    
+    private void writeFile(Note note) {
+        try { 
+            PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(this.path, false)));
+            writer.println(note.getTitle());
+            writer.println(note.getContent());
+            
+            writer.close();
+        } catch (IOException ex) {
+            Logger.getLogger(NoteServlet.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 }
